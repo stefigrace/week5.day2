@@ -1,61 +1,39 @@
-package steps;
+package week5.day1;
 
+
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.annotations.Test;
+import org.testng.annotations.Test;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.Assert;
+import org.testng.annotations.Test;
 
-import io.cucumber.java.en.But;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import testcase.ReadExcel;
 
-public class CreateLead extends BaseClass {	
-
-	
-	@When("Click on {string} link")
-	public void click_link(String text) {
-		driver.findElement(By.linkText(text)).click();
+public class CreateLead extends BaseClass {
+	@Test(dataProvider="SendData")
+	public void RunCreateLead(String company, String firstname, String lastname, String phone) {
+		driver.findElement(By.linkText("Leads")).click();
+		driver.findElement(By.linkText("Create Lead")).click();
+		driver.findElement(By.id("createLeadForm_companyName")).sendKeys(company);
+		driver.findElement(By.id("createLeadForm_firstName")).sendKeys(firstname);
+		driver.findElement(By.id("createLeadForm_lastName")).sendKeys(lastname);
+		driver.findElement(By.id("createLeadForm_primaryPhoneNumber")).sendKeys(phone);
+		driver.findElement(By.name("submitButton")).click();		
+}
+	@DataProvider
+	public String [][] SendData() throws IOException {
+		
+		ReadExcel re=new ReadExcel();
+		String[][] readData = re.ReadData("CreateLead");
+		return readData;
+		
 	}
-
-	@Given("Enter Company Name as {string}")
-	public void enter_company_name_as(String compName) {
-		driver.findElement(By.id("createLeadForm_companyName")).sendKeys(compName);
-	}
-
-	@Given("Enter First Name as {string}")
-	public void enter_first_name_as(String firstName) {
-		driver.findElement(By.id("createLeadForm_firstName")).sendKeys(firstName);
-	}
-
-	@Given("Enter Last Name as {string}")
-	public void enter_last_name_as(String lastName) {
-		driver.findElement(By.id("createLeadForm_lastName")).sendKeys(lastName);
-	}
-
-	@Given("Enter Phone Number as {string}")
-	public void enter_phone_number_as(String phoneNo) {
-		driver.findElement(By.id("createLeadForm_primaryPhoneNumber")).sendKeys(phoneNo);
-	}
-
-	@When("Click Submit Button")
-	public void click_submit_button() {
-		driver.findElement(By.name("submitButton")).click();
-	}
-
-	@Then("Title page should contains with {string}")
-	public void title_page_shoul_contains_with(String expectedTitle) {
-		String actTitle = driver.getTitle();
-		if (actTitle.contains(expectedTitle)) {
-			System.out.println("Title Matching");
-			Assert.assertTrue(true);
-		} else {
-			System.out.println("Title Not Matching");
-			Assert.assertTrue(false);
-		}
-	}
-
-	
 }

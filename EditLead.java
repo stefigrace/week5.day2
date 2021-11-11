@@ -1,66 +1,50 @@
-package steps;
+package week5.day1;
 
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
+import org.testng.annotations.Test;
+import org.testng.annotations.Test;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.time.Duration;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.testng.Assert;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.Test;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import testcase.ReadExcel;
 
-public class EditLead extends BaseClass{
-	@Given("Click {string} link")
-	public void click_link(String text) {
-		driver.findElement(By.linkText(text)).click();
-	}
-	@Given("Click Phone Tab")
-	public void click_phone_tab() {
+public class EditLead extends BaseClass {
+	@Test(dataProvider="DataProvider")
+	public void RunEditLead(String company, String phone) throws InterruptedException {		
+		driver.findElement(By.linkText("Leads")).click();
+		driver.findElement(By.linkText("Find Leads")).click();
 		driver.findElement(By.xpath("//span[text()='Phone']")).click();
-	}
-
-	@Given("Give Phone Number as {string}")
-	public void give_phone_number_as(String phoneNo) {
-		driver.findElement(By.xpath("//input[@name='phoneNumber']")).sendKeys(phoneNo);
-	}
-
-	@Given("Click Find Lead Button")
-	public void click_find_lead_button() {
+		driver.findElement(By.xpath("//input[@name='phoneNumber']")).clear();
+		driver.findElement(By.xpath("//input[@name='phoneNumber']")).sendKeys(phone);
 		driver.findElement(By.xpath("//button[text()='Find Leads']")).click();
-	}
-
-	@Given("Click The First LeadId")
-	public void click_the_first_lead_id() throws InterruptedException {
 		Thread.sleep(2000);
-		//wait.until(ExpectedConditions
-				//.visibilityOfElementLocated(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")));
 		driver.findElement(By.xpath("//div[@class='x-grid3-cell-inner x-grid3-col-partyId']/a")).click();
+		driver.findElement(By.linkText("Edit")).click();
+		driver.findElement(By.id("updateLeadForm_companyName")).clear();
+		driver.findElement(By.id("updateLeadForm_companyName")).sendKeys(company);
+		driver.findElement(By.name("submitButton")).click();		
+}
+	@DataProvider
+	public String [][] DataProvider() throws IOException {
+		
+		ReadExcel re=new ReadExcel();
+		String[][] readData = re.ReadData("EditLead");
+		return readData;		
+		
 	}
 
-	@Given("Update Company Name as {string}")
-	public void update_company_name_as(String compName) {
-		WebElement eleUpdateCompany = driver.findElement(By.id("updateLeadForm_companyName"));
-		eleUpdateCompany.clear();
-		eleUpdateCompany.sendKeys(compName);
-	}
-
-	@When("Click Update Button")
-	public void click_update_button() {
-		driver.findElement(By.name("submitButton")).click();
-	}
-
-	@Then("Company Name Should be {string}")
-	public void company_name_should_be(String expecCompName) {
-		String getCompName = driver.findElement(By.id("viewLead_companyName_sp")).getText();
-		String updatedCompName = getCompName.replaceAll("\\d", "");
-		String actCompName = updatedCompName.substring(0, updatedCompName.length() - 3);
-		if (actCompName.equalsIgnoreCase(expecCompName)) {
-			System.out.println("Company Name Matching");
-		} else {
-			System.out.println("Company Name Not Matching");
-		}
-		Assert.assertEquals(actCompName, expecCompName);
-	}
-
-
+		
+	
 }
